@@ -1,0 +1,112 @@
+[
+    {
+        "deviceId": "sensor-001",
+        "ts": "2025-10-05T19:40:10Z",
+        "temperature": 24.1,
+        "humidity": 43.8,
+        "pressure": 1010.2,
+        "battery": 0.88,
+        "lat": 49.2827,
+        "lon": -123.1207,
+        "status": "OK"
+    },
+    {
+        "deviceId": "sensor-002",
+        "ts": "2025-10-05T19:40:11Z",
+        "temperature": 25.7,
+        "humidity": 45.9,
+        "pressure": 1009.1,
+        "battery": 0.82,
+        "lat": 49.2829,
+        "lon": -123.1210,
+        "status": "OK"
+    },
+    {
+        "deviceId": "sensor-003",
+        "ts": "2025-10-05T19:40:12Z",
+        "temperature": 27.2,
+        "humidity": 48.6,
+        "pressure": 1011.3,
+        "battery": 0.66,
+        "lat": 49.2831,
+        "lon": -123.1213,
+        "status": "WARN"
+    },
+    {
+        "deviceId": "sensor-004",
+        "ts": "2025-10-05T19:40:13Z",
+        "temperature": 23.8,
+        "humidity": 41.9,
+        "pressure": 1009.7,
+        "battery": 0.90,
+        "lat": 49.2830,
+        "lon": -123.1209,
+        "status": "OK"
+    },
+    {
+        "deviceId": "sensor-005",
+        "ts": "2025-10-05T19:40:14Z",
+        "temperature": 28.6,
+        "humidity": 50.2,
+        "pressure": 1008.4,
+        "battery": 0.57,
+        "lat": 49.2825,
+        "lon": -123.1204,
+        "status": "WARN"
+    },
+    {
+        "deviceId": "sensor-006",
+        "ts": "2025-10-05T19:40:15Z",
+        "temperature": 25.3,
+        "humidity": 44.8,
+        "pressure": 1010.5,
+        "battery": 0.83,
+        "lat": 49.2826,
+        "lon": -123.1205,
+        "status": "OK"
+    },
+    {
+        "deviceId": "sensor-007",
+        "ts": "2025-10-05T19:40:16Z",
+        "temperature": 29.8,
+        "humidity": 52.1,
+        "pressure": 1011.7,
+        "battery": 0.46,
+        "lat": 49.2832,
+        "lon": -123.1215,
+        "status": "WARN"
+    },
+    {
+        "deviceId": "sensor-008",
+        "ts": "2025-10-05T19:40:17Z",
+        "temperature": 26.4,
+        "humidity": 47.3,
+        "pressure": 1009.3,
+        "battery": 0.71,
+        "lat": 49.2828,
+        "lon": -123.1208,
+        "status": "OK"
+    },
+    {
+        "deviceId": "sensor-009",
+        "ts": "2025-10-05T19:40:18Z",
+        "temperature": 31.2,
+        "humidity": 53.7,
+        "pressure": 1007.9,
+        "battery": 0.39,
+        "lat": 49.2834,
+        "lon": -123.1217,
+        "status": "FAIL"
+    },
+    {
+        "deviceId": "sensor-010",
+        "ts": "2025-10-05T19:40:19Z",
+        "temperature": 24.6,
+        "humidity": 43.1,
+        "pressure": 1010.1,
+        "battery": 0.92,
+        "lat": 49.2824,
+        "lon": -123.1203,
+        "status": "OK"
+    }
+]

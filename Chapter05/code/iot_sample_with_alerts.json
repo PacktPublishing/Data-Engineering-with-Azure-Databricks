@@ -1,0 +1,123 @@
+[
+    {
+        "deviceId": "device_1",
+        "ts": "2025-10-06T10:00:00.000Z",
+        "temperature": 25.0,
+        "battery": 85.0
+    },
+    {
+        "deviceId": "device_2",
+        "ts": "2025-10-06T10:00:01.000Z",
+        "temperature": 24.5,
+        "battery": 90.0
+    },
+    {
+        "deviceId": "device_3",
+        "ts": "2025-10-06T10:00:02.000Z",
+        "temperature": 26.0,
+        "battery": 88.0
+    },
+    {
+        "deviceId": "device_1",
+        "ts": "2025-10-06T10:00:10.000Z",
+        "temperature": 31.0,
+        "battery": 80.0
+    },
+    {
+        "deviceId": "device_2",
+        "ts": "2025-10-06T10:00:11.000Z",
+        "temperature": 32.5,
+        "battery": 18.0
+    },
+    {
+        "deviceId": "device_3",
+        "ts": "2025-10-06T10:00:12.000Z",
+        "temperature": 36.0,
+        "battery": 85.0
+    },
+    {
+        "deviceId": "device_1",
+        "ts": "2025-10-06T10:00:20.000Z",
+        "temperature": 33.0,
+        "battery": 75.0
+    },
+    {
+        "deviceId": "device_2",
+        "ts": "2025-10-06T10:00:21.000Z",
+        "temperature": 28.0,
+        "battery": 8.0
+    },
+    {
+        "deviceId": "device_3",
+        "ts": "2025-10-06T10:00:22.000Z",
+        "temperature": 38.0,
+        "battery": 80.0
+    },
+    {
+        "deviceId": "device_4",
+        "ts": "2025-10-06T10:00:30.000Z",
+        "temperature": 40.0,
+        "battery": 5.0
+    },
+    {
+        "deviceId": "device_1",
+        "ts": "2025-10-06T10:00:31.000Z",
+        "temperature": 27.0,
+        "battery": 70.0
+    },
+    {
+        "deviceId": "device_2",
+        "ts": "2025-10-06T10:00:32.000Z",
+        "temperature": 25.0,
+        "battery": 12.0
+    },
+    {
+        "deviceId": "device_3",
+        "ts": "2025-10-06T10:00:33.000Z",
+        "temperature": 35.5,
+        "battery": 75.0
+    },
+    {
+        "deviceId": "device_4",
+        "ts": "2025-10-06T10:00:40.000Z",
+        "temperature": 42.0,
+        "battery": 3.0
+    },
+    {
+        "deviceId": "device_5",
+        "ts": "2025-10-06T10:00:41.000Z",
+        "temperature": 37.0,
+        "battery": 15.0
+    },
+    {
+        "deviceId": "device_1",
+        "ts": "2025-10-06T10:00:50.000Z",
+        "temperature": 29.0,
+        "battery": 65.0
+    },
+    {
+        "deviceId": "device_2",
+        "ts": "2025-10-06T10:00:51.000Z",
+        "temperature": 31.5,
+        "battery": 10.0
+    },
+    {
+        "deviceId": "device_3",
+        "ts": "2025-10-06T10:00:52.000Z",
+        "temperature": 39.0,
+        "battery": 70.0
+    },
+    {
+        "deviceId": "device_4",
+        "ts": "2025-10-06T10:01:00.000Z",
+        "temperature": 45.0,
+        "battery": 2.0
+    },
+    {
+        "deviceId": "device_5",
+        "ts": "2025-10-06T10:01:01.000Z",
+        "temperature": 38.5,
+        "battery": 17.0
+    }
+]
+
