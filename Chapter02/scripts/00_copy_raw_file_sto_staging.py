@@ -1,7 +1,7 @@
 import os
 from datetime import datetime, date
 
-base_url = "https://raw.githubusercontent.com/svolodarskyi/dbrks-aanalytics/refs/heads/main/raw_data"
+base_url = "https://raw.githubusercontent.com/PacktPublishing/Data-Engineering-with-Azure-Databricks/refs/heads/main/Chapter02/raw_data/"
 target_dir = "/Volumes/analytics_dev/sales_raw/staging"
 today = date.today().isoformat()
 file_format = "csv"
