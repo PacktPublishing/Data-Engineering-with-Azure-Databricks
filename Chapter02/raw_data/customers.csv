@@ -1,0 +1,101 @@
+customer_id,email,name,city,state,country,signup_date
+CUST001,dustinanderson@example.org,Juan Guerra,Jonesborough,PA,USA,2023-11-16
+CUST002,williamspence@example.com,Robert Parker,Susanhaven,VT,USA,2023-01-20
+CUST003,lawrencejamie@example.org,Nancy Phillips,North Carly,VA,USA,2025-02-08
+CUST004,wshepherd@example.net,Karla Levy,Walterview,VT,USA,2022-10-06
+CUST005,christopherpetty@example.net,Stephanie Smith,West Lindsaytown,RI,USA,2024-05-09
+CUST006,matthewcaldwell@example.net,Joseph Hodges,Rachaelchester,NY,USA,2024-01-09
+CUST007,wjones@example.org,Courtney Ingram,Johnberg,WA,USA,2023-06-13
+CUST008,kolsen@example.net,Ricky Rasmussen,West Jasminebury,MI,USA,2023-07-25
+CUST009,richardserrano@example.net,Penny Johnson,Moorefort,CT,USA,2022-12-10
+CUST010,hernandezjennifer@example.org,Steven Robinson,Cameronport,TN,USA,2023-06-23
+CUST011,amandagomez@example.net,William Williams,South Robertborough,MT,USA,2023-03-08
+CUST012,dstewart@example.com,Robert Anderson,Whiteview,DE,USA,2025-08-22
+CUST013,mbutler@example.net,Casey Kim,Wardfurt,NC,USA,2023-02-05
+CUST014,nicholas31@example.net,Lori White,Lake Codyborough,NY,USA,2025-06-18
+CUST015,katelyn22@example.org,Ashley Lewis,New Carmenchester,KS,USA,2024-01-03
+CUST016,vnelson@example.org,Brian Jones,Millerville,KY,USA,2024-11-26
+CUST017,jeffrey36@example.net,Patrick Parker,South Amanda,MT,USA,2024-05-13
+CUST018,bbridges@example.org,Thomas Cain,East Vincent,AL,USA,2025-03-25
+CUST019,hurstjames@example.net,David Anderson,North Samanthastad,MI,USA,2025-06-01
+CUST020,atorres@example.net,Elizabeth Morgan,Howefort,NC,USA,2023-03-23
+CUST021,barrettashley@example.org,Charles Mendoza,Smithborough,GU,USA,2023-02-01
+CUST022,annawolf@example.com,Steven Nash,Hannahland,GU,USA,2023-04-05
+CUST023,smithbryan@example.net,Todd Pierce,New Leslie,CO,USA,2023-07-25
+CUST024,lmccarty@example.com,Desiree Logan,North Aaronborough,MI,USA,2022-12-30
+CUST025,whitemitchell@example.org,Julie Kim,Port Denisetown,IN,USA,2025-05-05
+CUST026,amberrush@example.org,Jordan Mendez,Boothport,SD,USA,2025-09-30
+CUST027,kathyriley@example.org,Jeffrey Taylor,Andreatown,MD,USA,2024-08-21
+CUST028,jesse44@example.org,Mary Rodriguez,Nelsonborough,HI,USA,2022-11-03
+CUST029,levymelissa@example.com,Nicholas Gallagher,Denisehaven,MA,USA,2024-11-08
+CUST030,davidgraves@example.org,Logan Bradshaw,Richardsbury,NH,USA,2025-05-26
+CUST031,tracy02@example.com,Laurie Odonnell,New Jessica,MO,USA,2023-06-17
+CUST032,wlee@example.org,Audrey Andrade,East Brandy,LA,USA,2025-08-01
+CUST033,tinaevans@example.net,Heidi Proctor,Hannahland,VT,USA,2024-06-04
+CUST034,matthew79@example.net,Regina Walker,New Abigail,DE,USA,2024-04-17
+CUST035,rickyshields@example.net,Christian White,Hicksmouth,MS,USA,2023-03-03
+CUST036,lewismichelle@example.org,Stephen Stokes,Michaelborough,IL,USA,2025-05-24
+CUST037,baileymegan@example.com,Judy Jackson,Stanleyport,MN,USA,2024-11-06
+CUST038,justin57@example.net,Heather Donaldson,Port Terri,AL,USA,2025-03-11
+CUST039,kenneth53@example.org,Jared Gray,East Zacharyport,HI,USA,2023-01-13
+CUST040,johnsonandrew@example.net,Rachel Smith,Suarezbury,MO,USA,2023-01-25
+CUST041,stephanie55@example.net,Christopher Edwards,New Rebeccamouth,AR,USA,2024-10-28
+CUST042,ymorrison@example.org,Bonnie Saunders,Hillberg,WA,USA,2023-08-17
+CUST043,castrostephanie@example.com,Ann Thornton,Berryville,NE,USA,2025-02-23
+CUST044,matthewgates@example.org,Grant Berg,Bergerberg,IA,USA,2024-12-13
+CUST045,boydelizabeth@example.net,Michael Paul,Tammyshire,GU,USA,2024-06-08
+CUST046,carsonthomas@example.net,Barbara Stevens,Eddiestad,VT,USA,2024-06-05
+CUST047,rscott@example.org,Teresa Foster,Choitown,HI,USA,2022-11-29
+CUST048,beckerlogan@example.com,Christopher Rivera,South Jennifer,MI,USA,2023-02-05
+CUST049,marcoirwin@example.net,Robert Santiago,Barbermouth,TX,USA,2025-03-18
+CUST050,brandon87@example.com,Aaron Conner,Jamestown,CA,USA,2025-06-23
+CUST051,qtate@example.net,Philip Raymond,Nguyentown,LA,USA,2023-05-21
+CUST052,johnrodriguez@example.org,Kimberly Smith,North Gregoryborough,NC,USA,2024-01-22
+CUST053,smithcynthia@example.net,Tammy Garner,South Kevinburgh,NV,USA,2023-07-02
+CUST054,alicia81@example.net,Dawn Harper,Hallborough,CT,USA,2024-11-10
+CUST055,millersusan@example.com,Andre Jones,West Sierrachester,NJ,USA,2023-02-04
+CUST056,jennifermunoz@example.org,Jennifer Hamilton,West Jennifer,ID,USA,2023-08-29
+CUST057,julie24@example.net,Kenneth Johnson,Johnsonberg,IA,USA,2023-09-04
+CUST058,kennethgonzales@example.com,Justin Green,East Rebekah,NJ,USA,2024-10-09
+CUST059,amandabarber@example.com,Nicholas Franklin,West Adriana,TN,USA,2023-08-24
+CUST060,williammullins@example.org,Lawrence Weber,Rebeccashire,VI,USA,2025-07-04
+CUST061,phillipsrandy@example.org,Sean Hernandez,Lake Victoria,SD,USA,2023-10-15
+CUST062,dustin55@example.com,Susan Mack,Port Matthewside,MN,USA,2023-11-03
+CUST063,hblack@example.net,Kathleen Evans,East Donnastad,AZ,USA,2024-04-19
+CUST064,jeremy39@example.net,Richard Evans,East Jennifer,NC,USA,2024-01-07
+CUST065,stevenmitchell@example.org,Jason Alexander PhD,Weaverfort,CA,USA,2025-05-19
+CUST066,priceamber@example.com,Jerry Gould,West Craig,MH,USA,2024-09-27
+CUST067,elizabeth40@example.com,Jessica Ruiz,Lake Jamesbury,ME,USA,2024-12-22
+CUST068,brittany10@example.net,Thomas Atkinson,Amandaview,DC,USA,2022-12-13
+CUST069,paynejennifer@example.net,Jeffrey Hardy,Boonehaven,WV,USA,2024-07-29
+CUST070,mjohnson@example.org,Julie Wallace,Port Timothyside,MD,USA,2024-07-18
+CUST071,huertajoseph@example.org,Sarah Munoz,Christopherchester,VA,USA,2023-04-11
+CUST072,sharon98@example.org,Erin Smith,West Carlafurt,KS,USA,2024-12-23
+CUST073,elizabeth51@example.com,Samantha Holmes,Allenside,FL,USA,2022-12-13
+CUST074,qrobinson@example.org,Kyle Brown,Lake Amberside,GU,USA,2023-12-18
+CUST075,lbriggs@example.com,Samuel Thompson,New Tamara,ND,USA,2025-07-18
+CUST076,michaelruiz@example.com,Sharon Collins,New Emilybury,OH,USA,2022-12-12
+CUST077,richard39@example.net,Jorge Perry,Davidsonport,NH,USA,2025-05-11
+CUST078,colonleroy@example.net,Joshua York,Kyleburgh,CT,USA,2023-10-14
+CUST079,qnguyen@example.org,William Dalton,South Charles,AK,USA,2025-08-20
+CUST080,hartbrittany@example.com,Robert Kirby,Katherineview,KS,USA,2024-08-09
+CUST081,austinmelissa@example.net,Jacqueline Reed,Lucaston,ID,USA,2023-08-27
+CUST082,isharp@example.org,Jose Jacobson,Jameston,AZ,USA,2022-12-28
+CUST083,mary67@example.net,Tiffany Morales,Kevinfurt,OK,USA,2022-10-30
+CUST084,annetteedwards@example.org,David Sandoval,North Johnathan,MS,USA,2024-01-01
+CUST085,pedropaul@example.net,Thomas Faulkner,North Tina,DE,USA,2023-06-29
+CUST086,monicafoley@example.net,Heather Hodges,Leemouth,IA,USA,2023-11-06
+CUST087,vmartinez@example.net,Rebecca Cox,Garciashire,NM,USA,2022-12-06
+CUST088,jwilkins@example.org,Andre Garrett,New Arianafort,CT,USA,2024-05-09
+CUST089,eric29@example.org,Gary Young,West Brittany,MN,USA,2024-04-21
+CUST090,lawrencevictor@example.net,Patrick Hansen,Duncanburgh,DE,USA,2023-05-20
+CUST091,sheryl50@example.org,Diane Rodriguez,Danielberg,AK,USA,2023-10-21
+CUST092,jenniferfrancis@example.net,Monica Ramos,New Curtisstad,GA,USA,2023-12-30
+CUST093,jwoods@example.com,Justin Thompson,Greenview,KY,USA,2023-11-21
+CUST094,patrick21@example.com,Paul Young,Reyesstad,NC,USA,2023-09-08
+CUST095,porterjessica@example.net,Paul Williams,Travischester,KS,USA,2023-05-19
+CUST096,jessicasmith@example.com,Mandy Moreno,South Sherri,AR,USA,2025-07-13
+CUST097,lbrown@example.net,Dawn Johnson,East Shirley,DE,USA,2023-09-08
+CUST098,grayclaudia@example.net,Debbie Ayers,Veronicaton,AZ,USA,2025-09-17
+CUST099,christopher58@example.com,Brittany Chang,Lake Rosefort,IL,USA,2023-11-02
+CUST100,awoodard@example.org,George Martinez,South Danielle,IL,USA,2024-06-14
