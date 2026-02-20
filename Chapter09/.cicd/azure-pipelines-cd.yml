@@ -1,0 +1,136 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pr: none
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  - name: pythonVersion
+    value: "3.11"
+
+stages:
+  - stage: StagingApproval
+    displayName: "Approve Staging Deploy"
+    jobs:
+      - deployment: ApproveStagingDeploy
+        displayName: "Approve staging deployment"
+        environment: staging
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - script: echo "Staging deployment approved"
+                  displayName: "Approval confirmed"
+
+  - stage: Staging
+    displayName: "Deploy to Staging"
+    dependsOn: StagingApproval
+    condition: succeeded()
+    variables:
+      - group: databricks-staging
+    jobs:
+      - job: DeployAndRun
+        displayName: "Deploy, test & run pipeline"
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: $(pythonVersion)
+            displayName: "Set up Python"
+
+          - script: pip install -r requirements-test.txt
+            displayName: "Install test dependencies"
+
+          - script: |
+              curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+            displayName: "Install Databricks CLI"
+
+          - script: >
+              pytest test/unit_test/
+              --junitxml=unit-test-results.xml
+              --cov=src
+              --cov-report=xml:coverage.xml
+              --cov-report=term
+            displayName: "Run unit tests with coverage"
+            env:
+              DATABRICKS_HOST: $(DATABRICKS_HOST)
+              DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
+
+          - task: PublishTestResults@2
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFiles: unit-test-results.xml
+              testRunTitle: "Staging Unit Tests"
+            displayName: "Publish unit test results"
+
+          - task: PublishCodeCoverageResults@2
+            condition: succeededOrFailed()
+            inputs:
+              summaryFileLocation: coverage.xml
+            displayName: "Publish code coverage"
+
+          - script: databricks bundle deploy -t staging --force --auto-approve
+            displayName: "Deploy bundle to staging"
+            env:
+              DATABRICKS_HOST: $(DATABRICKS_HOST)
+              DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
+
+          - script: databricks bundle run -t staging sales_orders_job
+            displayName: "Run staging job (upload files + pipeline)"
+            env:
+              DATABRICKS_HOST: $(DATABRICKS_HOST)
+              DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
+
+          - script: >
+              BUNDLE_TARGET=staging
+              pytest test/integration_test/ -v
+              -m integration
+              --junitxml=integration-test-results.xml
+            displayName: "Run integration tests"
+            env:
+              DATABRICKS_HOST: $(DATABRICKS_HOST)
+              DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
+
+          - task: PublishTestResults@2
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFiles: integration-test-results.xml
+              testRunTitle: "Staging Integration Tests"
+            displayName: "Publish integration test results"
+
+      - job: Rollback
+        displayName: "Rollback staging deployment"
+        dependsOn: DeployAndRun
+        condition: failed()
+        variables:
+          - group: databricks-staging
+        steps:
+          - checkout: self
+            fetchDepth: 2
+
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: $(pythonVersion)
+            displayName: "Set up Python"
+
+          - script: |
+              curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+            displayName: "Install Databricks CLI"
+
+          - script: |
+              echo "Rolling back to previous commit..."
+              git checkout HEAD~1
+            displayName: "Checkout previous commit"
+
+          - script: databricks bundle deploy -t staging --force --auto-approve
+            displayName: "Redeploy previous version to staging"
+            env:
+              DATABRICKS_HOST: $(DATABRICKS_HOST)
+              DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
+
+  # - stage: Production
+  #   displayName: "Deploy to Production"
+  #   

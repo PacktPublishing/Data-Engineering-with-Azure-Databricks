@@ -1,0 +1,22 @@
+resources:
+  pipelines:
+    sales_orders_pipeline:
+      name: "${var.department}_orders_pipeline"
+      catalog: ${var.catalog}
+      target: "${var.department}_pipeline"
+      development: true
+      continuous: false
+      channel: "PREVIEW"
+      serverless: true
+      libraries:
+        - notebook:
+            path: ../src/pipelines/load_bronze_silver.py
+      configuration:
+        environment: "${bundle.target}"
+        catalog: ${var.catalog}
+        department: ${var.department}
+        bronze_schema: "${var.schema_prefix}${var.bronze_schema}"
+        silver_schema: "${var.schema_prefix}${var.silver_schema}"
+        gold_schema: "${var.schema_prefix}${var.gold_schema}"
+        ml_schema: "${var.schema_prefix}${var.ml_schema}"
+        raw_volume_path: ${var.raw_volume_path}

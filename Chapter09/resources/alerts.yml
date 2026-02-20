@@ -1,0 +1,52 @@
+resources:
+  alerts:
+    daily_revenue_drop:
+      display_name: "Daily Revenue Drop Alert"
+      warehouse_id: ${var.warehouse_id}
+      query_text: |
+        WITH daily AS (
+          SELECT
+            date,
+            total_revenue,
+            LAG(total_revenue) OVER (ORDER BY date) as prev_revenue
+          FROM ${var.catalog}.${var.schema_prefix}${var.gold_schema}.sales_daily_metrics
+        )
+        SELECT
+          date,
+          total_revenue,
+          prev_revenue,
+          ROUND((total_revenue - prev_revenue) / prev_revenue * 100, 2) as revenue_change_pct
+        FROM daily
+        WHERE date = (SELECT MAX(date) FROM ${var.catalog}.${var.schema_prefix}${var.gold_schema}.sales_daily_metrics)
+      schedule:
+        quartz_cron_schedule: "0 0 8 * * ?"
+        timezone_id: "UTC"
+        pause_status: "UNPAUSED"
+      evaluation:
+        source:
+          name: "revenue_change_pct"
+        comparison_operator: "LESS_THAN"
+        threshold:
+          value:
+            double_value: ${var.revenue_drop_threshold}
+
+    low_daily_orders:
+      display_name: "Low Daily Orders Alert"
+      warehouse_id: ${var.warehouse_id}
+      query_text: |
+        SELECT
+          date,
+          total_orders
+        FROM ${var.catalog}.${var.schema_prefix}${var.gold_schema}.sales_daily_metrics
+        WHERE date = (SELECT MAX(date) FROM ${var.catalog}.${var.schema_prefix}${var.gold_schema}.sales_daily_metrics)
+      schedule:
+        quartz_cron_schedule: "0 0 8 * * ?"
+        timezone_id: "UTC"
+        pause_status: "UNPAUSED"
+      evaluation:
+        source:
+          name: "total_orders"
+        comparison_operator: "LESS_THAN"
+        threshold:
+          value:
+            double_value: ${var.min_daily_orders}

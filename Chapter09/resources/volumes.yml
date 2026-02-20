@@ -1,0 +1,8 @@
+resources:
+  volumes:
+    raw_data:
+      name: "raw"
+      catalog_name: ${var.catalog}
+      schema_name: ${var.bronze_schema}
+      volume_type: "MANAGED"
+      comment: "Raw CSV files for ingestion"

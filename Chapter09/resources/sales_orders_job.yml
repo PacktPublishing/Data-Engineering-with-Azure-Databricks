@@ -1,0 +1,29 @@
+resources:
+  jobs:
+    sales_orders_job:
+      name: "sales_orders_job"
+      tasks:
+        - task_key: check_seed_data
+          condition_task:
+            op: NOT_EQUAL
+            left: "${bundle.target}"
+            right: "prod"
+
+        - task_key: upload_raw_files
+          depends_on:
+            - task_key: check_seed_data
+              outcome: "true"
+          notebook_task:
+            notebook_path: ../src/upload_raw_files.py
+            base_parameters:
+              environment: "${bundle.target}"
+              raw_volume_path: "${var.raw_volume_path}"
+
+        - task_key: run_pipeline
+          depends_on:
+            - task_key: check_seed_data
+              outcome: "false"
+            - task_key: upload_raw_files
+          run_if: AT_LEAST_ONE_SUCCESS
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.sales_orders_pipeline.id}
