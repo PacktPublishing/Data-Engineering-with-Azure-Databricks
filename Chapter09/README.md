@@ -8,10 +8,10 @@ The dataset was generated for this book and does not reflect real business numbe
 
 Ingests raw CSV files (customers, orders, order items, products) through a medallion architecture:
 
-- **Bronze** — raw ingestion with audit columns
-- **Silver** — cleansed and validated records
-- **Gold** — daily sales metrics and aggregations
-- **ML Features** — per-customer order features for downstream models
+- **Bronze** - raw ingestion with audit columns
+- **Silver** - cleansed and validated records
+- **Gold** - daily sales metrics and aggregations
+- **ML Features** - per-customer order features for downstream models
 
 ## Project Structure
 
@@ -110,8 +110,8 @@ BUNDLE_TARGET=staging pytest test/integration_test/ -m integration
 
 Two Azure DevOps pipelines automate the workflow:
 
-- **CI** — triggers on pull requests. Validates the bundle, runs unit tests, and deploys to `dev_ci`.
-- **CD** — triggers on merge to main. Deploys to staging with manual approval, runs the pipeline and integration tests, and rolls back on failure.
+- **CI** - triggers on pull requests. Validates the bundle, runs unit tests, and deploys to `dev_ci`.
+- **CD** - triggers on merge to main. Deploys to staging with manual approval, runs the pipeline and integration tests, and rolls back on failure.
 
 Both pipelines create the target catalog automatically before deploying.
 
@@ -119,8 +119,8 @@ Both pipelines create the target catalog automatically before deploying.
 
 `src/monitoring/monitoring.sql` queries Databricks system tables:
 
-- **Job runs** — history and failures from `system.lakeflow.job_run_timeline`
-- **Success rates** — daily job completion rates over 30 days
-- **Compute cost** — DBU consumption by SKU from `system.billing.usage`
+- **Job runs** - history and failures from `system.lakeflow.job_run_timeline`
+- **Success rates** - daily job completion rates over 30 days
+- **Compute cost** - DBU consumption by SKU from `system.billing.usage`
 
 Data quality alerts in `resources/alerts.yml` fire daily when revenue drops or order counts fall below configured thresholds.
