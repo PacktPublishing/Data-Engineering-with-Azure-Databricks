@@ -1,0 +1,21 @@
+resources:
+  schemas:
+    bronze:
+      name: ${var.bronze_schema}
+      catalog_name: ${var.catalog}
+      comment: "Bronze layer for raw ${var.department} data ingestion"
+
+    silver:
+      name: ${var.silver_schema}
+      catalog_name: ${var.catalog}
+      comment: "Silver layer for cleansed and validated ${var.department} data"
+
+    gold:
+      name: ${var.gold_schema}
+      catalog_name: ${var.catalog}
+      comment: "Gold layer with aggregated metrics for AI/BI dashboards"
+
+    ml_features:
+      name: ${var.ml_schema}
+      catalog_name: ${var.catalog}
+      comment: "Feature store for ML models"

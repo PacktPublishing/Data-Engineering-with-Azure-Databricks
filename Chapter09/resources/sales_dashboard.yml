@@ -1,0 +1,8 @@
+resources:
+  dashboards:
+    sales_analytics_dashboard:
+      display_name: "Sales Analytics Dashboard"
+      warehouse_id: ${var.warehouse_id}
+      file_path: ../src/dashboards/sales_analytics_dashboard.lvdash.json
+      dataset_catalog: ${var.catalog}
+      dataset_schema: "${var.schema_prefix}${var.gold_schema}"

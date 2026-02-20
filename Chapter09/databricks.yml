@@ -1,0 +1,74 @@
+bundle:
+  name: sales_orders
+
+include:
+  - resources/*.yml
+
+variables:
+  # Warehouse
+  warehouse_id:
+    lookup:
+      warehouse: "Serverless Starter Warehouse"
+
+  # Catalog & Schema naming
+  catalog:
+    default: "analytics_${bundle.target}"
+  department:
+    default: "sales"
+
+  # Schema names (these match the resource definitions)
+  bronze_schema:
+    default: "${var.department}_bronze"
+  silver_schema:
+    default: "${var.department}_silver"
+  gold_schema:
+    default: "${var.department}_gold"
+  ml_schema:
+    default: "ml_features"
+
+  # Prefix applied by dev mode to resource names
+  schema_prefix:
+    default: ""
+
+  # Paths
+  base_path:
+    default: "/Workspace/Users/${workspace.current_user.userName}/sales_orders"
+  alerts_path:
+    default: "${var.base_path}/alerts"
+  queries_path:
+    default: "${var.base_path}/queries"
+  raw_volume_path:
+    default: "/Volumes/${var.catalog}/${var.schema_prefix}${var.bronze_schema}/raw"
+  checkpoint_path:
+    default: "${var.raw_volume_path}/_checkpoint"
+
+  # Alert thresholds
+  revenue_drop_threshold:
+    default: -20
+    description: "Percentage drop in revenue to trigger alert"
+  min_daily_orders:
+    default: 10
+    description: "Minimum daily orders before alert"
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      root_path: "/Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}"
+    variables:
+      schema_prefix: "dev_${workspace.current_user.short_name}_"
+
+  dev_ci:
+    workspace:
+      root_path: "/Workspace/dev_ci/.bundle/${bundle.name}"
+    variables:
+      catalog: "analytics_dev"
+
+  staging:
+    workspace:
+      root_path: "/Workspace/staging/.bundle/${bundle.name}"
+
+
+  prod:
+    mode: production
