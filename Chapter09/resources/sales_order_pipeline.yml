@@ -10,7 +10,7 @@ resources:
       serverless: true
       libraries:
         - notebook:
-            path: ../src/pipelines/load_bronze_to_gold.py.py
+            path: ../src/pipelines/load_bronze_to_gold.py
       configuration:
         environment: "${bundle.target}"
         catalog: ${var.catalog}
