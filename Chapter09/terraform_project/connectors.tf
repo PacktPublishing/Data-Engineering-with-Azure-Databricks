@@ -21,5 +21,6 @@ resource "databricks_storage_credential" "external_mi" {
   azure_managed_identity {
     access_connector_id = azurerm_databricks_access_connector.unity.id
   }
-  comment = "Storage credential for ${var.environment} Unity Catalog"
+  comment    = "Storage credential for ${var.environment} Unity Catalog"
+  depends_on = [databricks_metastore_assignment.this]
 }

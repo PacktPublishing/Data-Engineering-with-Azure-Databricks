@@ -12,31 +12,32 @@ You need three things:
 
 Each environment needs its own Databricks workspace. Create the workspace in Azure before running this project.
 
-## Two Values to Collect
+## Values to Collect
 
-| Value | Where to Find It |
-|---|---|
-| `account_id` | Databricks account console, top-right corner or Settings page |
-| `databricks_resource_id` | Azure Portal, your Databricks workspace, Overview page, JSON View link, copy Resource ID |
+| Value        | Where to Find It                                                               |
+| ------------ | ------------------------------------------------------------------------------ |
+| `account_id` | Databricks account console, top-right corner or Settings page                  |
+| `region`     | Azure region where your workspaces are deployed (e.g. `eastus`)                |
+| `workspaces` | Azure Portal, each Databricks workspace, Overview, JSON View, copy Resource ID |
+| `catalogs`   | Catalog names you want per environment                                         |
 
-The resource ID looks like this:
+The workspace resource ID looks like this:
 `/subscriptions/xxxx/resourceGroups/my-rg/providers/Microsoft.Databricks/workspaces/my-ws`
 
 ## Project Files
 
 ```
-main.tf                  required providers
-locals.tf                data sources and computed values
-providers.tf             azurerm and databricks provider configs
-variables.tf             three inputs: environment, account_id, databricks_resource_id
-storage.tf               storage account and two containers
-connectors.tf            access connector, role assignment, storage credential
-external_locations.tf    external location for catalog storage
-metastore.tf             metastore creation and workspace attachment
-catalog.tf               environment catalog
-outputs.tf               outputs
-dev.tfvars               values for dev environment
-staging.tfvars           values for staging environment
+main.tf                    required providers
+locals.tf                  data sources and computed values
+providers.tf               azurerm and databricks provider configs
+variables.tf               input variables
+storage.tf                 storage account and two containers
+connectors.tf              access connector, role assignment, storage credential
+external_locations.tf      external location for catalog storage
+metastore.tf               metastore creation and workspace attachment
+catalog.tf                 environment catalog
+outputs.tf                 outputs
+terraform.tfvars.example   example variable values (copy to terraform.tfvars)
 ```
 
 ## What Gets Created
@@ -55,7 +56,11 @@ All resource names include the environment name. Dev and staging resources never
 
 ## Steps to Deploy
 
-Open the tfvars file for your environment. Replace the placeholder values with your real ones.
+Copy the example file and fill in your values:
+
+```bash
+cp terraform.tfvars.example terraform.tfvars
+```
 
 Example `dev.tfvars`:
 ```hcl
@@ -71,43 +76,40 @@ catalogs = {
 }
 ```
 
-Run these commands:
+Initialize Terraform:
 
 ```bash
 terraform init
 ```
 
-Create a workspace for your environment and deploy:
+Create a workspace for the first environment and deploy with `create_metastore=true`:
 
 ```bash
-terraform workspace new dev
-terraform apply -var-file=dev.tfvars
+terraform workspace select -or-create dev
+terraform plan -var="environment=dev" -var="create_metastore=true"
+terraform apply -var='environment=dev' -var='create_metastore=true'
 ```
 
-To deploy staging, create a second workspace and point to the staging tfvars:
+To deploy staging, create a second workspace. The metastore already exists so `create_metastore` defaults to `false`:
 
 ```bash
-terraform workspace new staging
-terraform apply -var-file=staging.tfvars
-```
-
-## Switching Between Environments
-
-```bash
-terraform workspace select dev
-terraform plan -var-file=dev.tfvars
-```
-
-```bash
-terraform workspace select staging
-terraform plan -var-file=staging.tfvars
+terraform workspace select -or-create staging
+terraform plan -var="environment=staging"
+terraform apply -var='environment=staging'
 ```
 
 ## Tearing Down an Environment
 
+Destroy staging first (no metastore dependency), then dev:
+
+```bash
+terraform workspace select staging
+terraform destroy -var='environment=staging'
+```
+
 ```bash
 terraform workspace select dev
-terraform destroy -var-file=dev.tfvars
+terraform destroy -var='environment=dev' -var='create_metastore=true'
 ```
 
 **Important:** `terraform destroy` only removes resources managed by Terraform. The Databricks workspaces were created manually in the Azure Portal and must be deleted manually as well. Delete them from the Azure Portal when you no longer need them.
