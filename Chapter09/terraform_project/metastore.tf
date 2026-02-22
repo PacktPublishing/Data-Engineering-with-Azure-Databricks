@@ -1,5 +1,6 @@
 // Unity catalog metastore (one per region, shared across environments)
 resource "databricks_metastore" "this" {
+  provider      = databricks.azure_account
   count         = var.create_metastore ? 1 : 0
   name          = "${var.region}-metastore"
   region        = var.region
@@ -15,6 +16,7 @@ data "databricks_metastore" "existing" {
 
 // Assign managed identity to metastore (only when creating)
 resource "databricks_metastore_data_access" "first" {
+  provider     = databricks.azure_account
   count        = var.create_metastore ? 1 : 0
   metastore_id = local.metastore_id
   name         = "metastore-key"
