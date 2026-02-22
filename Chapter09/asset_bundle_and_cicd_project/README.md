@@ -132,4 +132,4 @@ Data quality alerts in `resources/alerts.yml` fire daily when revenue drops or o
 
 ## Cleanup
 
-Running `databricks bundle destroy` removes the bundle resources but not the workspace itself. The Databricks workspaces were created manually in the Azure Portal and must be deleted manually as well. Delete them from the Azure Portal when you no longer need them.
+Running `databricks bundle destroy` removes the bundle resources but not the workspace itself. The Databricks workspaces were created manually in the Azure Portal(if Premium Workspaces) and must be deleted manually as well. Delete them from the Azure Portal when you no longer need them.
