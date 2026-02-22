@@ -59,9 +59,16 @@ Open the tfvars file for your environment. Replace the placeholder values with y
 
 Example `dev.tfvars`:
 ```hcl
-environment            = "dev"
-account_id             = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-databricks_resource_id = "/subscriptions/<sub-id>/resourceGroups/<rg>/providers/Microsoft.Databricks/workspaces/<dev-workspace>"
+account_id = "<your-databricks-account-id>"
+region     = "eastus"
+workspaces = {
+  dev     = "/subscriptions/<subscription-id>/resourceGroups/<rg-name>/providers/Microsoft.Databricks/workspaces/<workspace-name>"
+  staging = "/subscriptions/<subscription-id>/resourceGroups/<rg-name>/providers/Microsoft.Databricks/workspaces/<workspace-name>"
+}
+catalogs = {
+  dev     = ["analytics_dev"]
+  staging = ["analytics_staging"]
+}
 ```
 
 Run these commands:
