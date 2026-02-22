@@ -102,3 +102,5 @@ terraform plan -var-file=staging.tfvars
 terraform workspace select dev
 terraform destroy -var-file=dev.tfvars
 ```
+
+**Important:** `terraform destroy` only removes resources managed by Terraform. The Databricks workspaces were created manually in the Azure Portal and must be deleted manually as well. Delete them from the Azure Portal when you no longer need them.

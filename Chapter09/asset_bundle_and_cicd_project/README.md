@@ -129,3 +129,7 @@ Both pipelines create the target catalog automatically before deploying.
 - **Compute cost** - DBU consumption by SKU from `system.billing.usage`
 
 Data quality alerts in `resources/alerts.yml` fire daily when revenue drops or order counts fall below configured thresholds.
+
+## Cleanup
+
+Running `databricks bundle destroy` removes the bundle resources but not the workspace itself. The Databricks workspaces were created manually in the Azure Portal and must be deleted manually as well. Delete them from the Azure Portal when you no longer need them.
