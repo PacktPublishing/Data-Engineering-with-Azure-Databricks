@@ -59,7 +59,7 @@ ORDER BY run_date DESC;
 -- COMMAND ----------
 
 -- QUERY 3: Compute Cost by SKU (Last 7 Days)
--- Note: not filtered to JOBS only — covers all compute workload types.
+-- Note: not filtered to JOBS only - covers all compute workload types.
 SELECT u.workspace_id
 	,u.usage_date
 	,u.sku_name AS cluster_type
