@@ -62,6 +62,20 @@ Copy the example file and fill in your values:
 cp terraform.tfvars.example terraform.tfvars
 ```
 
+Example `dev.tfvars`:
+```hcl
+account_id = "<your-databricks-account-id>"
+region     = "eastus"
+workspaces = {
+  dev     = "/subscriptions/<subscription-id>/resourceGroups/<rg-name>/providers/Microsoft.Databricks/workspaces/<workspace-name>"
+  staging = "/subscriptions/<subscription-id>/resourceGroups/<rg-name>/providers/Microsoft.Databricks/workspaces/<workspace-name>"
+}
+catalogs = {
+  dev     = ["analytics_dev"]
+  staging = ["analytics_staging"]
+}
+```
+
 Initialize Terraform:
 
 ```bash
