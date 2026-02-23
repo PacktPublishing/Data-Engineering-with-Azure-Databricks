@@ -48,8 +48,8 @@ sales_orders/
 │       ├── conftest.py
 │       └── test_pipeline_output.py
 ├── .cicd/
-│   ├── azure-pipelines-ci.yml  # PR validation pipeline
-│   └── azure-pipelines-cd.yml  # Staging and production pipeline
+│   ├── azure-pipelines-dev.yml           # Dev pipeline (PR validation)
+│   └── azure-pipelines-staging-prod.yml  # Staging and production pipeline
 └── pytest.ini
 ```
 
@@ -58,7 +58,6 @@ sales_orders/
 | Target    | Catalog             | Schema Prefix     | Use Case               |
 | --------- | ------------------- | ----------------- | ---------------------- |
 | `dev`     | `analytics_dev`     | `dev_<username>_` | Local development      |
-| `dev_ci`  | `analytics_dev`     | _(none)_          | CI pipeline            |
 | `staging` | `analytics_staging` | _(none)_          | Pre-production testing |
 | `prod`    | `analytics_prod`    | _(none)_          | Production             |
 
@@ -111,14 +110,16 @@ Run integration tests (after deploying and running the pipeline in staging):
 BUNDLE_TARGET=staging pytest test/integration_test/ -m integration
 ```
 
+If teams want to catch integration issues before merging, integration testing can also be done as part of pre-staging validation.
+
 ## CI/CD
 
 Two Azure DevOps pipelines automate the workflow:
 
-- **CI** - triggers on pull requests. Validates the bundle, runs unit tests, and deploys to `dev_ci`.
-- **CD** - triggers on merge to main. Deploys to staging with manual approval, runs the pipeline and integration tests, and rolls back on failure.
+- **Dev pipeline** (`azure-pipelines-dev.yml`) - triggers on pull requests. Validates the bundle and runs unit tests. No deployment happens at this stage. Note: if multiple developers deploy the `dev` target simultaneously via `databricks bundle deploy -t dev`, schema name collisions may occur because the dev target prefixes schemas with the deploying user's name. Developers should use `databricks bundle deploy -t dev` locally for isolated per-user development.
+- **Staging and production pipeline** (`azure-pipelines-staging-prod.yml`) - triggers on merge to main. Deploys to staging with manual approval, runs the pipeline and integration tests, and rolls back on failure.
 
-Both pipelines create the target catalog automatically before deploying.
+The staging and production pipeline creates the target catalog automatically before deploying.
 
 ## Monitoring
 
