@@ -59,12 +59,6 @@ targets:
     variables:
       schema_prefix: "dev_${workspace.current_user.short_name}_"
 
-  dev_ci:
-    workspace:
-      root_path: "/Workspace/dev_ci/.bundle/${bundle.name}"
-    variables:
-      catalog: "analytics_dev"
-
   staging:
     workspace:
       root_path: "/Workspace/staging/.bundle/${bundle.name}"

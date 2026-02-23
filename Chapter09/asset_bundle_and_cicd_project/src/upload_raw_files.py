@@ -11,7 +11,7 @@ import shutil
 environment = dbutils.widgets.get("environment")
 raw_volume_path = dbutils.widgets.get("raw_volume_path")
 
-if environment not in ("dev", "dev_ci", "staging"):
+if environment not in ("dev", "staging"):
     print(f"Environment '{environment}' does not require file upload. Skipping.")
     dbutils.notebook.exit("skipped")
 

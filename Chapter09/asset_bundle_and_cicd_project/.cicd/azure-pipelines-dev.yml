@@ -18,7 +18,7 @@ stages:
     displayName: "PR Validation"
     jobs:
       - job: ValidateAndTest
-        displayName: "Validate, test & deploy to dev"
+        displayName: "Validate and test"
         steps:
           - task: UsePythonVersion@0
             inputs:
@@ -32,7 +32,7 @@ stages:
               curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
             displayName: "Install Databricks CLI"
 
-          - script: databricks bundle validate -t dev_ci
+          - script: databricks bundle validate -t dev
             displayName: "Validate bundle (dev target)"
             env:
               DATABRICKS_HOST: $(DATABRICKS_HOST)
@@ -53,7 +53,7 @@ stages:
             condition: succeededOrFailed()
             inputs:
               testResultsFiles: test-results.xml
-              testRunTitle: "CI Unit Tests"
+              testRunTitle: "Dev Unit Tests"
             displayName: "Publish test results"
 
           - task: PublishCodeCoverageResults@2
@@ -61,9 +61,3 @@ stages:
             inputs:
               summaryFileLocation: coverage.xml
             displayName: "Publish code coverage"
-
-          - script: databricks bundle deploy -t dev_ci --force --auto-approve
-            displayName: "Deploy bundle to dev"
-            env:
-              DATABRICKS_HOST: $(DATABRICKS_HOST)
-              DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
