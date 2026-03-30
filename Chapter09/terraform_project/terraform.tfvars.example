@@ -3,8 +3,10 @@ region     = "eastus"
 workspaces = {
   dev     = "/subscriptions/<subscription-id>/resourceGroups/<rg-name>/providers/Microsoft.Databricks/workspaces/<workspace-name>"
   staging = "/subscriptions/<subscription-id>/resourceGroups/<rg-name>/providers/Microsoft.Databricks/workspaces/<workspace-name>"
+  prod = "/subscriptions/<subscription-id>/resourceGroups/<rg-name>/providers/Microsoft.Databricks/workspaces/<workspace-name>"
 }
 catalogs = {
   dev     = ["analytics_dev"]
   staging = ["analytics_staging"]
+  prod = ["analytics_prod"]
 }
