@@ -171,12 +171,6 @@ stages:
               DATABRICKS_HOST: $(DATABRICKS_HOST)
               DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
 
-          - script: databricks bundle run -t prod sales_orders_job
-            displayName: "Run production job (upload files + pipeline)"
-            env:
-              DATABRICKS_HOST: $(DATABRICKS_HOST)
-              DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
-
       - job: Rollback
         displayName: "Rollback production deployment"
         dependsOn: DeployAndRun
