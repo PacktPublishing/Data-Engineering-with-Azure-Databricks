@@ -131,6 +131,78 @@ stages:
               DATABRICKS_HOST: $(DATABRICKS_HOST)
               DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
 
-  # - stage: Production
-  #   displayName: "Deploy to Production"
-  #   
+  - stage: ProductionApproval
+    displayName: "Approve Production Deploy"
+    dependsOn: Staging
+    condition: succeeded()
+    jobs:
+      - deployment: ApproveProductionDeploy
+        displayName: "Approve production deployment"
+        environment: production
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - script: echo "Production deployment approved"
+                  displayName: "Approval confirmed"
+
+  - stage: Production
+    displayName: "Deploy to Production"
+    dependsOn: ProductionApproval
+    condition: succeeded()
+    variables:
+      - group: databricks-production
+    jobs:
+      - job: DeployAndRun
+        displayName: "Deploy & run pipeline"
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: $(pythonVersion)
+            displayName: "Set up Python"
+
+          - script: |
+              curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+            displayName: "Install Databricks CLI"
+
+          - script: databricks bundle deploy -t prod --force --auto-approve
+            displayName: "Deploy bundle to production"
+            env:
+              DATABRICKS_HOST: $(DATABRICKS_HOST)
+              DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
+
+          - script: databricks bundle run -t prod sales_orders_job
+            displayName: "Run production job (upload files + pipeline)"
+            env:
+              DATABRICKS_HOST: $(DATABRICKS_HOST)
+              DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
+
+      - job: Rollback
+        displayName: "Rollback production deployment"
+        dependsOn: DeployAndRun
+        condition: failed()
+        variables:
+          - group: databricks-production
+        steps:
+          - checkout: self
+            fetchDepth: 2
+
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: $(pythonVersion)
+            displayName: "Set up Python"
+
+          - script: |
+              curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+            displayName: "Install Databricks CLI"
+
+          - script: |
+              echo "Rolling back to previous commit..."
+              git checkout HEAD~1
+            displayName: "Checkout previous commit"
+
+          - script: databricks bundle deploy -t prod --force --auto-approve
+            displayName: "Redeploy previous version to production"
+            env:
+              DATABRICKS_HOST: $(DATABRICKS_HOST)
+              DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
