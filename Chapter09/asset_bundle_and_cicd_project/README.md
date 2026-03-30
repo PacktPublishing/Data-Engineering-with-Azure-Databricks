@@ -1,6 +1,6 @@
 # Sales Orders Project
 
-Companion project for **Chapter 9: CI/CD and DevOps for Azure Databricks**. This project implements a complete data pipeline with Asset Bundles, CI/CD automation, and production monitoring.
+Companion project for **Chapter 9: CI/CD and DevOps for Azure Databricks**. This project implements a complete data pipeline with Automation Bundles, CI/CD automation, and production monitoring.
 
 The dataset was generated for this book and does not reflect real business numbers.
 
