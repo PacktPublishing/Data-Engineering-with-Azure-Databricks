@@ -69,10 +69,12 @@ region     = "eastus"
 workspaces = {
   dev     = "/subscriptions/<subscription-id>/resourceGroups/<rg-name>/providers/Microsoft.Databricks/workspaces/<workspace-name>"
   staging = "/subscriptions/<subscription-id>/resourceGroups/<rg-name>/providers/Microsoft.Databricks/workspaces/<workspace-name>"
+  prod = "/subscriptions/<subscription-id>/resourceGroups/<rg-name>/providers/Microsoft.Databricks/workspaces/<workspace-name>"
 }
 catalogs = {
   dev     = ["analytics_dev"]
   staging = ["analytics_staging"]
+  prod = ["analytics_prod"]
 }
 ```
 
@@ -98,9 +100,22 @@ terraform plan -var="environment=staging"
 terraform apply -var='environment=staging'
 ```
 
+To deploy prod, create a third workspace. The metastore already exists so `create_metastore` defaults to `false`:
+
+```bash
+terraform workspace select -or-create prod
+terraform plan -var="environment=prod"
+terraform apply -var='environment=prod'
+```
+
 ## Tearing Down an Environment
 
 Destroy staging first (no metastore dependency), then dev:
+
+```bash
+terraform workspace select prod
+terraform destroy -var='environment=prod'
+```
 
 ```bash
 terraform workspace select staging
@@ -111,5 +126,7 @@ terraform destroy -var='environment=staging'
 terraform workspace select dev
 terraform destroy -var='environment=dev' -var='create_metastore=true'
 ```
+
+
 
 **Important:** `terraform destroy` only removes resources managed by Terraform. The Databricks workspaces were created manually in the Azure Portal and must be deleted manually as well. Delete them from the Azure Portal when you no longer need them.
