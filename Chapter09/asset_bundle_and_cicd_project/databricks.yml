@@ -61,8 +61,10 @@ targets:
 
   staging:
     workspace:
-      root_path: "/Workspace/staging/.bundle/${bundle.name}"
+      root_path: "/Workspace/.bundle/${bundle.name}"
 
 
   prod:
     mode: production
+    workspace:
+      root_path: "/Workspace/.bundle/${bundle.name}"
