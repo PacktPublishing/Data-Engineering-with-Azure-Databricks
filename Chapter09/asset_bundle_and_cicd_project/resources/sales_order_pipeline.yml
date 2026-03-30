@@ -4,7 +4,6 @@ resources:
       name: "${var.department}_orders_pipeline"
       catalog: ${var.catalog}
       target: "${var.department}_pipeline"
-      development: true
       continuous: false
       channel: "PREVIEW"
       serverless: true
