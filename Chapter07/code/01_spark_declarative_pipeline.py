@@ -7,21 +7,20 @@
 # - Gold layer: Business analytics
 # ============================================
 
-import dlt
+from pyspark import pipelines as dp
 from pyspark.sql.functions import *
 
 # Configuration
-VOLUME_PATH = "/Volumes/cat_dev/vol_chapter7/sdp/"
+VOLUME_PATH = "/Volumes/cat_dev/sandbox/vol_chapter7/sdp/"
 
 # ============================================
 # SECTION 1: Bronze Layer - Raw Ingestion
 # ============================================
 
-@dlt.table(
+@dp.table(
     comment="Raw orders data from CSV files - Bronze layer",
     table_properties={
         "quality": "bronze",
-        "pipelines.autoOptimize.managed": "true"
     }
 )
 def sdp_orders_bronze():
@@ -36,15 +35,13 @@ def sdp_orders_bronze():
         .option("cloudFiles.format", "csv")
         .option("header", "true")
         .option("cloudFiles.inferColumnTypes", "true")
-        .option("cloudFiles.schemaLocation", f"{VOLUME_PATH}_schemas/orders")
         .load(f"{VOLUME_PATH}orders.csv")
     )
 
-@dlt.table(
+@dp.table(
     comment="Raw customers data from CSV files - Bronze layer",
     table_properties={
-        "quality": "bronze",
-        "pipelines.autoOptimize.managed": "true"
+        "quality": "bronze"
     }
 )
 def sdp_customers_bronze():
@@ -58,7 +55,6 @@ def sdp_customers_bronze():
         .option("cloudFiles.format", "csv")
         .option("header", "true")
         .option("cloudFiles.inferColumnTypes", "true")
-        .option("cloudFiles.schemaLocation", f"{VOLUME_PATH}_schemas/customers")
         .load(f"{VOLUME_PATH}customers.csv")
     )
 
@@ -66,17 +62,18 @@ def sdp_customers_bronze():
 # SECTION 2: Silver Layer - Data Quality
 # ============================================
 
-@dlt.table(
+@dp.table(
     comment="Cleaned orders with data quality checks - Silver layer",
     table_properties={
-        "quality": "silver",
-        "pipelines.autoOptimize.managed": "true"
+        "quality": "silver"
     }
 )
-@dlt.expect_or_drop("valid_order_id", "order_id IS NOT NULL")
-@dlt.expect_or_drop("valid_customer_id", "customer_id IS NOT NULL")
-@dlt.expect_or_drop("valid_order_status", "order_status IN ('Delivered', 'Shipped', 'Pending')")
-@dlt.expect("valid_order_total", "order_total > 0")
+@dp.expect_all_or_drop({
+    "valid_order_id": "order_id IS NOT NULL",
+    "valid_customer_id": "customer_id IS NOT NULL",
+    "valid_order_status": "order_status IN ('Delivered', 'Shipped', 'Pending')"
+})
+@dp.expect("valid_order_total", "order_total > 0")
 def sdp_orders_silver():
     """
     Silver layer: Apply business rules and data quality checks.
@@ -92,7 +89,7 @@ def sdp_orders_silver():
     - 52 orders with status 'Cancelled' will be dropped (not in allowed statuses)
     """
     return (
-        dlt.read_stream("sdp_orders_bronze")
+        spark.readStream.table("sdp_orders_bronze")
         # Remove duplicates based on order_id
         .dropDuplicates(["order_id"])
         # Convert to TIMESTAMP (not DATE) for watermarking support in downstream tables
@@ -112,17 +109,16 @@ def sdp_orders_silver():
         .withColumn("order_status", initcap(trim(col("order_status"))))
     )
 
-@dlt.table(
+@dp.table(
     comment="Cleaned customers with validation - Silver layer",
     table_properties={
-        "quality": "silver",
-        "pipelines.autoOptimize.managed": "true"
+        "quality": "silver"
     }
 )
-@dlt.expect_or_drop("valid_customer_id", "customer_id IS NOT NULL")
-@dlt.expect_or_drop("valid_name", "name IS NOT NULL AND length(name) > 0")
-@dlt.expect("valid_country", "country IS NOT NULL")
-@dlt.expect("recent_signup", "signup_date >= '2023-01-01'")
+@dp.expect_or_drop("valid_customer_id", "customer_id IS NOT NULL")
+@dp.expect_or_drop("valid_name", "name IS NOT NULL AND length(name) > 0")
+@dp.expect("valid_country", "country IS NOT NULL")
+@dp.expect("recent_signup", "signup_date >= '2023-01-01'")
 def sdp_customers_silver():
     """
     Silver layer: Clean and validate customer data.
@@ -138,7 +134,7 @@ def sdp_customers_silver():
     - 11 customers signed up before 2023-01-01 (logged as warnings)
     """
     return (
-        dlt.read_stream("sdp_customers_bronze")
+        spark.readStream.table("sdp_customers_bronze")
         .dropDuplicates(["customer_id"])
         # Standardize date format
         .withColumn("signup_date", to_date("signup_date", "yyyy-MM-dd"))
@@ -165,11 +161,10 @@ def sdp_customers_silver():
 # SECTION 3: Gold Layer - Business Analytics
 # ============================================
 
-@dlt.table(
+@dp.table(
     comment="Geographic sales distribution - Gold layer",
     table_properties={
-        "quality": "gold",
-        "pipelines.autoOptimize.managed": "true"
+        "quality": "gold"
     }
 )
 def sdp_geographic_sales():
@@ -194,13 +189,13 @@ def sdp_geographic_sales():
     # Read orders as stream with watermark
     # Watermark allows data up to 1 day late before finalizing aggregations
     orders_stream = (
-        dlt.read_stream("sdp_orders_silver")
+        spark.readStream.table("sdp_orders_silver")
         .withWatermark("order_date", "1 day")
     )
     
     # Read customers as batch (not streaming) for join
     # This creates a stream-to-static join which is more efficient
-    customers_batch = dlt.read("sdp_customers_silver")
+    customers_batch = spark.read.table("sdp_customers_silver")
     
     # Join orders with customer location data
     orders_with_location = orders_stream.join(
@@ -225,11 +220,9 @@ def sdp_geographic_sales():
             approx_count_distinct("customer_id").alias("unique_customers"),
             max("order_total").alias("max_order_value"),
             # Status metrics
-            sum(when(col("order_status") == "Delivered", col("order_total")).otherwise(0)).alias("delivered_revenue"),
-            sum(when(col("order_status") == "Cancelled", 1).otherwise(0)).alias("cancelled_orders")
+            sum(when(col("order_status") == "Delivered", col("order_total")).otherwise(0)).alias("delivered_revenue")
         )
         .withColumn("revenue_per_customer", col("total_revenue") / col("unique_customers"))
-        .withColumn("cancellation_rate", col("cancelled_orders") / col("total_orders"))
         # Extract window start and end times as separate columns
         .select(
             col("window.start").alias("period_start"),
@@ -242,8 +235,6 @@ def sdp_geographic_sales():
             "unique_customers",
             "max_order_value",
             "delivered_revenue",
-            "cancelled_orders",
-            "revenue_per_customer",
-            "cancellation_rate"
+            "revenue_per_customer"
         )
     )
