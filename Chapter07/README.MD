@@ -24,4 +24,4 @@ In this chapter, we explore how to build automated, production-ready data pipeli
 
 ## Data Setup
 
-The pipeline uses sample data files (`orders.csv` and `customers.csv`) from the Chapter 2 repository folder. Upload these files to a Unity Catalog Volume at `/Volumes/cat_dev/vol_chapter7/sdp/` before running the pipeline. The setup section in the chapter provides detailed instructions for creating the Volume and verifying file uploads.
+The pipeline uses sample data files (`orders.csv` and `customers.csv`) from the Chapter 2 repository folder. Upload these files to a Unity Catalog Volume at `/Volumes/cat_dev/sandbox/vol_chapter7/sdp/` before running the pipeline. The setup section in the chapter provides detailed instructions for creating the Volume and verifying file uploads.
