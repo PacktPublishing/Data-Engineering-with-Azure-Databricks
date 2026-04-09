@@ -17,14 +17,12 @@ RETURN CASE
   ELSE CONCAT('***-***-', RIGHT(REGEXP_REPLACE(phone_value, '[^0-9]', ''), 4))
 END;
 
--- Masking function: monetary values (show ranges for non-finance)
+-- Masking function: monetary values (NULL for non-finance)
 CREATE OR REPLACE FUNCTION cat_dev.sandbox.mask_revenue(revenue DECIMAL(10,2))
-RETURNS STRING
+RETURNS DECIMAL(10,2)
 RETURN CASE
-  WHEN IS_ACCOUNT_GROUP_MEMBER('finance_team') THEN CAST(revenue AS STRING)
-  WHEN revenue > 10000 THEN 'High (>10K)'
-  WHEN revenue > 1000 THEN 'Medium (1K-10K)'
-  ELSE 'Low (<1K)'
+  WHEN IS_ACCOUNT_GROUP_MEMBER('finance_team') THEN revenue
+  ELSE NULL
 END;
 
 -- Row filter: regional access control
