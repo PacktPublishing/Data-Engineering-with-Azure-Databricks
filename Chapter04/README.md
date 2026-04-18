@@ -1,6 +1,6 @@
 # Chapter 4: Apache Spark Architecture and Execution Model
 
-This repository contains the code examples for Chapter 4 of *Data Engineering with Apache Spark on Azure Databricks*. 
+This repository contains the code examples for Chapter 4 of *Data Engineering with Azure Databricks*. 
 
 The examples provided here are expanded, production-ready versions of the code snippets found in the book. They include additional context, comments, and functionality to help you better understand and apply these concepts in real-world scenarios.
 
