@@ -1,0 +1,173 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "_comment": "Chapter 8: ADF Pipeline Integration with Azure Databricks",
+  "_description": [
+    "This ARM template defines a complete Azure Data Factory pipeline that integrates",
+    "with Azure Databricks. It demonstrates:",
+    "  - A multi-activity pipeline with conditional branching",
+    "  - Passing parameters from ADF to Databricks notebooks",
+    "  - Error handling with retry logic and failure activities",
+    "  - Using Managed Identity for secure authentication (no passwords)",
+    "",
+    "To deploy: Import this pipeline JSON into your ADF instance via the ADF Studio UI",
+    "or use the Azure CLI: az datafactory pipeline create --factory-name <name> --name <pipeline-name> --pipeline @pipeline.json"
+  ],
+  "name": "databricks_etl_pipeline_with_error_handling",
+  "properties": {
+    "description": "Production ETL pipeline: Ingests data via Databricks, validates quality, and handles failures gracefully.",
+    "parameters": {
+      "source_path": {
+        "type": "string",
+        "defaultValue": "/Volumes/analytics_dev/sales_raw/staging/daily_data",
+        "description": "Path to the source data in Unity Catalog Volumes."
+      },
+      "target_table": {
+        "type": "string",
+        "defaultValue": "gold.daily_sales_summary",
+        "description": "Target Delta table for the processed output."
+      },
+      "execution_date": {
+        "type": "string",
+        "defaultValue": "@formatDateTime(utcnow(), 'yyyy-MM-dd')",
+        "description": "The logical execution date for idempotent processing."
+      },
+      "environment": {
+        "type": "string",
+        "defaultValue": "production",
+        "description": "Deployment environment: development, staging, or production."
+      }
+    },
+    "activities": [
+      {
+        "name": "data_ingestion",
+        "description": "Run the data ingestion notebook to load raw data into the Bronze layer.",
+        "type": "DatabricksNotebook",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "01:00:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 60,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "linkedServiceName": {
+          "referenceName": "AzureDatabricks_LinkedService",
+          "type": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "notebookPath": "/Workspace/Repos/data-engineering/chapter_08/notebooks/01_ingest_data",
+          "baseParameters": {
+            "source_path": {
+              "value": "@pipeline().parameters.source_path",
+              "type": "Expression"
+            },
+            "target_table": {
+              "value": "@pipeline().parameters.target_table",
+              "type": "Expression"
+            },
+            "execution_date": {
+              "value": "@pipeline().parameters.execution_date",
+              "type": "Expression"
+            },
+            "environment": {
+              "value": "@pipeline().parameters.environment",
+              "type": "Expression"
+            }
+          }
+        }
+      },
+      {
+        "name": "data_transformation",
+        "description": "Transform and clean the ingested data, applying business rules.",
+        "type": "DatabricksNotebook",
+        "dependsOn": [
+          {
+            "activity": "data_ingestion",
+            "dependencyConditions": ["Succeeded"]
+          }
+        ],
+        "policy": {
+          "timeout": "02:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 120
+        },
+        "linkedServiceName": {
+          "referenceName": "AzureDatabricks_LinkedService",
+          "type": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "notebookPath": "/Workspace/Repos/data-engineering/chapter_08/notebooks/02_transform_data",
+          "baseParameters": {
+            "execution_date": {
+              "value": "@pipeline().parameters.execution_date",
+              "type": "Expression"
+            }
+          }
+        }
+      },
+      {
+        "name": "data_quality_check",
+        "description": "Validate the output data quality before marking the run as successful.",
+        "type": "DatabricksNotebook",
+        "dependsOn": [
+          {
+            "activity": "data_transformation",
+            "dependencyConditions": ["Succeeded"]
+          }
+        ],
+        "policy": {
+          "timeout": "00:30:00",
+          "retry": 0
+        },
+        "linkedServiceName": {
+          "referenceName": "AzureDatabricks_LinkedService",
+          "type": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "notebookPath": "/Workspace/Repos/data-engineering/chapter_08/notebooks/04_quality_checks",
+          "baseParameters": {
+            "target_table": {
+              "value": "@pipeline().parameters.target_table",
+              "type": "Expression"
+            }
+          }
+        }
+      },
+      {
+        "name": "notify_on_failure",
+        "description": "Send an alert email if any upstream activity fails.",
+        "type": "WebActivity",
+        "dependsOn": [
+          {
+            "activity": "data_ingestion",
+            "dependencyConditions": ["Failed"]
+          },
+          {
+            "activity": "data_transformation",
+            "dependencyConditions": ["Failed"]
+          },
+          {
+            "activity": "data_quality_check",
+            "dependencyConditions": ["Failed"]
+          }
+        ],
+        "typeProperties": {
+          "url": "https://your-logic-app-or-webhook-url.azurewebsites.net/api/notify",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "value": "@concat('{\"pipeline\": \"', pipeline().Pipeline, '\", \"run_id\": \"', pipeline().RunId, '\", \"status\": \"FAILED\", \"execution_date\": \"', pipeline().parameters.execution_date, '\"}')",
+            "type": "Expression"
+          }
+        }
+      }
+    ],
+    "annotations": [
+      "chapter-08",
+      "data-engineering",
+      "databricks-integration"
+    ]
+  }
+}

@@ -1,0 +1,201 @@
+# Chapter 8: Databricks Asset Bundle (DABs) Configuration
+# File: databricks.yml
+#
+# Databricks Asset Bundles (DABs) are the recommended way to deploy
+# and manage Databricks resources as code. This bundle defines:
+# - A multi-task Lakeflow Job with task dependencies
+# - Environment-specific configurations (dev, staging, prod)
+# - Cluster policies and resource tags
+#
+# Prerequisites:
+#   - Databricks CLI 0.200+ installed: pip install databricks-cli
+#   - Authenticated: databricks auth login --host https://your-workspace.azuredatabricks.net
+#
+# Usage:
+#   databricks bundle validate              # Validate configuration
+#   databricks bundle deploy -t dev         # Deploy to development
+#   databricks bundle deploy -t production  # Deploy to production
+#   databricks bundle run -t production chapter_08_daily_etl_job  # Run the job
+
+bundle:
+  name: chapter_08_data_engineering
+
+# ---------------------------------------------------------------------------
+# Variables — override per environment using -t flag
+# ---------------------------------------------------------------------------
+variables:
+  catalog:
+    description: "Unity Catalog catalog name."
+    default: "analytics_dev"
+  schema:
+    description: "Unity Catalog schema name."
+    default: "silver"
+  source_volume:
+    description: "Unity Catalog Volume path for source data."
+    default: "/Volumes/analytics_dev/sales_raw/staging/"
+  min_workers:
+    description: "Minimum number of cluster workers."
+    default: "2"
+  max_workers:
+    description: "Maximum number of cluster workers."
+    default: "8"
+  node_type:
+    description: "Azure VM instance type for cluster nodes."
+    default: "Standard_D4ds_v5"
+
+# ---------------------------------------------------------------------------
+# Resources — Lakeflow Jobs and Clusters
+# ---------------------------------------------------------------------------
+resources:
+  jobs:
+    chapter_08_daily_etl_job:
+      name: "Chapter_08_Daily_ETL_Pipeline [${bundle.target}]"
+      description: "Production daily ETL: Ingest → Transform → Aggregate → Quality Check"
+
+      # Schedule: Run daily at 2:00 AM UTC in production only
+      schedule:
+        quartz_cron_expression: "0 0 2 * * ?"
+        timezone_id: "UTC"
+        pause_status: UNPAUSED
+
+      # SLA alert: Warn if the job runs longer than 4 hours
+      health:
+        rules:
+          - metric: RUN_DURATION_SECONDS
+            op: GREATER_THAN
+            value: 14400
+
+      email_notifications:
+        on_failure:
+          - data-engineering-team@company.com
+        no_alert_for_skipped_runs: true
+
+      tags:
+        environment: "${bundle.target}"
+        chapter: "08"
+        team: "data-engineering"
+
+      # Shared job cluster — created once and reused across all tasks
+      job_clusters:
+        - job_cluster_key: etl_job_cluster
+          new_cluster:
+            spark_version: "15.4.x-scala2.12"
+            node_type_id: "${var.node_type}"
+            autoscale:
+              min_workers: "${var.min_workers}"
+              max_workers: "${var.max_workers}"
+            spark_conf:
+              spark.sql.adaptive.enabled: "true"
+              spark.sql.adaptive.coalescePartitions.enabled: "true"
+              spark.sql.adaptive.skewJoin.enabled: "true"
+            azure_attributes:
+              availability: SPOT_WITH_FALLBACK_AZURE
+              spot_bid_max_price: -1
+            custom_tags:
+              Project: "Data-Platform"
+              Team: "Data-Engineering"
+              Environment: "${bundle.target}"
+
+      # Task definitions with DAG dependencies
+      tasks:
+        - task_key: data_ingestion
+          description: "Ingest raw sales data into the Bronze layer."
+          job_cluster_key: etl_job_cluster
+          notebook_task:
+            notebook_path: ./notebooks/01_ingest_data.py
+            base_parameters:
+              source_path: "${var.source_volume}"
+              target_catalog: "${var.catalog}"
+              execution_date: "{{job.start_time.iso_date}}"
+          timeout_seconds: 3600
+          max_retries: 2
+          min_retry_interval_millis: 60000
+
+        - task_key: data_transformation
+          description: "Transform Bronze data to Silver with business rules."
+          depends_on:
+            - task_key: data_ingestion
+          job_cluster_key: etl_job_cluster
+          notebook_task:
+            notebook_path: ./notebooks/02_transform_data.py
+            base_parameters:
+              source_catalog: "${var.catalog}"
+              target_catalog: "${var.catalog}"
+              target_schema: "${var.schema}"
+              execution_date: "{{job.start_time.iso_date}}"
+          timeout_seconds: 7200
+          max_retries: 1
+          min_retry_interval_millis: 120000
+
+        - task_key: data_aggregation
+          description: "Aggregate Silver data into Gold business metrics."
+          depends_on:
+            - task_key: data_transformation
+          job_cluster_key: etl_job_cluster
+          notebook_task:
+            notebook_path: ./notebooks/03_aggregate_data.py
+            base_parameters:
+              execution_date: "{{job.start_time.iso_date}}"
+          timeout_seconds: 3600
+          max_retries: 1
+
+        - task_key: data_quality_check
+          description: "Validate Gold layer output quality."
+          depends_on:
+            - task_key: data_aggregation
+          job_cluster_key: etl_job_cluster
+          notebook_task:
+            notebook_path: ./notebooks/04_quality_checks.py
+            base_parameters:
+              target_table: "${var.catalog}.gold.daily_sales_summary"
+              execution_date: "{{job.start_time.iso_date}}"
+          timeout_seconds: 1800
+          max_retries: 0
+
+# ---------------------------------------------------------------------------
+# Targets — environment-specific overrides
+# ---------------------------------------------------------------------------
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://your-dev-workspace.azuredatabricks.net
+    variables:
+      catalog: "analytics_dev"
+      min_workers: "1"
+      max_workers: "4"
+      node_type: "Standard_D4ds_v5"
+    resources:
+      jobs:
+        chapter_08_daily_etl_job:
+          # Pause the schedule in dev — trigger manually only
+          schedule:
+            pause_status: PAUSED
+
+  staging:
+    workspace:
+      host: https://your-staging-workspace.azuredatabricks.net
+    variables:
+      catalog: "analytics_staging"
+      min_workers: "2"
+      max_workers: "8"
+      node_type: "Standard_D4ds_v5"
+
+  production:
+    workspace:
+      host: https://your-production-workspace.azuredatabricks.net
+    variables:
+      catalog: "analytics_prod"
+      min_workers: "4"
+      max_workers: "20"
+      node_type: "Standard_E8ds_v5"   # Memory-optimized for production workloads
+    resources:
+      jobs:
+        chapter_08_daily_etl_job:
+          schedule:
+            pause_status: UNPAUSED
+          email_notifications:
+            on_failure:
+              - data-engineering-team@company.com
+              - on-call-alerts@company.com
